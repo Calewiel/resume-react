@@ -1,0 +1,17 @@
+.particlesContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0; /* Push it behind other content */
+  pointer-events: none; /* Let clicks pass through */
+  overflow: hidden;
+}
+
+.particlesContainer canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+}
