@@ -14,6 +14,7 @@ interface ExperienceNodeProps {
   color: string;
   glowColor: string;
   position: { x: number; y: number };
+  connectTo?: string; // Add connection target
 }
 
 export default function ExperienceNode({
@@ -26,72 +27,60 @@ export default function ExperienceNode({
   color,
   glowColor,
   position,
+  connectTo,
 }: ExperienceNodeProps) {
   return (
     <div
-      className={styles.nodeWrapper}
-      style={{ 
-        left: `${position.x}%`, 
+      className={`${styles.nodeWrapper} ${connectTo ? styles[`connect-${connectTo}`] : ''}`}
+      style={{
+        left: `${position.x}%`,
         top: `${position.y}%`,
-      }}
+        '--node-color': color,
+        '--node-glow': glowColor,
+      } as React.CSSProperties}
     >
-      <HoverCard openDelay={0} closeDelay={100}>
+      <HoverCard openDelay={300} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <div
+          <div 
             className={styles.node}
-            style={{
-              borderColor: color,
-              boxShadow: `
-                0 0 30px ${glowColor}, 
-                0 0 60px ${glowColor}, 
-                inset 0 0 30px ${glowColor}20
-              `,
-            }}
+            style={{ borderColor: color, color: color }}
           >
-            <h3 className={styles.nodeTitle} style={{ color }}>
-              {label}
-            </h3>
-            <p className={styles.nodeSubtitle}>{subtitle}</p>
+            <div className={styles.nodeTitle}>{label}</div>
+            <div className={styles.nodeSubtitle}>{subtitle}</div>
           </div>
         </HoverCardTrigger>
 
-        <HoverCardContent
+        <HoverCardContent 
+          className={styles.hoverCard}
+          style={{ borderColor: color }}
           side="top"
           align="center"
-          className={styles.hoverCard}
-          style={{
-            borderColor: color,
-            boxShadow: `0 0 40px ${glowColor}40`,
-          }}
         >
-          <div className={styles.cardHeader} style={{ borderColor: `${color}30` }}>
-            <p className={styles.cardDuration}>{duration}</p>
-            <h3 className={styles.cardTitle}>{label}</h3>
-            <p className={styles.cardSubtitle}>{subtitle}</p>
+          <div className={styles.cardHeader} style={{ borderColor: color }}>
+            <div className={styles.cardDuration}>{duration}</div>
+            <div className={styles.cardTitle}>{label}</div>
+            <div className={styles.cardSubtitle}>{subtitle}</div>
           </div>
 
-          {badges.length > 0 && (
-            <div className={styles.badgesContainer}>
-              {badges.map((badge, idx) => (
-                <span
-                  key={idx}
-                  className={styles.badge}
-                  style={{ 
-                    backgroundColor: color,
-                    boxShadow: `0 2px 10px ${glowColor}60`
-                  }}
-                >
-                  {badge}
-                </span>
-              ))}
-            </div>
-          )}
+          <div className={styles.badgesContainer}>
+            {badges.map((badge, index) => (
+              <Badge 
+                key={index}
+                className={styles.badge}
+                style={{ backgroundColor: color }}
+              >
+                {badge}
+              </Badge>
+            ))}
+          </div>
 
           <div className={styles.highlightsContainer}>
-            {highlights.map((item, idx) => (
-              <div key={idx} className={styles.highlight}>
-                <span className={styles.bullet} style={{ color }}>→</span>
-                <p className={styles.highlightText}>{item}</p>
+            {highlights.map((highlight, index) => (
+              <div key={index} className={styles.highlight}>
+                <span className={styles.bullet} style={{ color: color }}>
+                  •
+                </span>
+                <span className={styles.highlightText}>{highlight}</span>
               </div>
             ))}
           </div>

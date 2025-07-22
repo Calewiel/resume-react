@@ -5,6 +5,7 @@ interface Experience {
   id: string;
   position: { x: number; y: number };
   color: string;
+  glowColor: string;
 }
 
 interface ConnectionLinesProps {
@@ -16,93 +17,76 @@ export default function ConnectionLines({ experiences, connections }: Connection
   const getExperienceById = (id: string) => experiences.find(exp => exp.id === id);
 
   return (
-    <>
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
       <defs>
-        {connections.map((conn, idx) => {
-          const from = getExperienceById(conn.from);
-          const to = getExperienceById(conn.to);
-          if (!from || !to) return null;
-
-          return (
-            <linearGradient
-              key={`grad-${idx}`}
-              id={`grad-${conn.from}-${conn.to}`}
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="0%"
-            >
-              <stop offset="0%" stopColor={from.color} stopOpacity="0.8">
-                <animate
-                  attributeName="stopOpacity"
-                  values="0.4;0.8;0.4"
-                  dur="3s"
-                  repeatCount="indefinite"
-                />
-              </stop>
-              <stop offset="50%" stopColor={from.color} stopOpacity="1" />
-              <stop offset="100%" stopColor={to.color} stopOpacity="0.8">
-                <animate
-                  attributeName="stopOpacity"
-                  values="0.4;0.8;0.4"
-                  dur="3s"
-                  repeatCount="indefinite"
-                  begin="1.5s"
-                />
-              </stop>
-            </linearGradient>
-          );
-        })}
+        {/* Add glow filter */}
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge> 
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
       </defs>
-
+      
       {connections.map((conn, idx) => {
         const from = getExperienceById(conn.from);
         const to = getExperienceById(conn.to);
         if (!from || !to) return null;
 
-        // Calculate path for smooth curve
-        const startX = `${from.position.x}%`;
-        const startY = `${from.position.y}%`;
-        const endX = `${to.position.x}%`;
-        const endY = `${to.position.y}%`;
-        
-        // Control points for bezier curve
-        const cp1X = `${from.position.x + (to.position.x - from.position.x) * 0.5}%`;
-        const cp1Y = `${from.position.y - 10}%`;
-        const cp2X = `${from.position.x + (to.position.x - from.position.x) * 0.5}%`;
-        const cp2Y = `${to.position.y - 10}%`;
+        // Convert percentages to actual coordinates (SVG viewBox is 100x100)
+        const startX = from.position.x;
+        const startY = from.position.y;
+        const endX = to.position.x;
+        const endY = to.position.y;
+
+        // Create smooth bezier curve
+        const controlPoint1X = startX + (endX - startX) * 0.3;
+        const controlPoint1Y = startY - 8;
+        const controlPoint2X = startX + (endX - startX) * 0.7;
+        const controlPoint2Y = endY - 8;
+
+        // Create path without percentage signs
+        const pathData = `M ${startX} ${startY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${endX} ${endY}`;
 
         return (
-          <g key={`conn-${idx}`}>
-            {/* Glow effect */}
+          <g key={`connection-${idx}`}>
+            {/* Glow effect line */}
             <path
-              d={`M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`}
-              stroke={`url(#grad-${conn.from}-${conn.to})`}
-              strokeWidth="8"
+              d={pathData}
+              stroke={from.glowColor}
+              strokeWidth="6"
               fill="none"
-              strokeLinecap="round"
-              opacity="0.3"
-              filter="blur(4px)"
+              opacity="0.6"
+              filter="url(#glow)"
             />
             {/* Main line */}
             <path
-              d={`M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`}
-              stroke={`url(#grad-${conn.from}-${conn.to})`}
-              strokeWidth="3"
+              d={pathData}
+              stroke={from.color}
+              strokeWidth="2"
               fill="none"
-              strokeLinecap="round"
               opacity="0.9"
-            >
-              <animate
-                attributeName="stroke-dasharray"
-                values="0 1000;1000 0"
-                dur="2s"
-                repeatCount="1"
-              />
-            </path>
+            />
+            {/* Start dot */}
+            <circle
+              cx={startX}
+              cy={startY}
+              r="4"
+              fill={from.color}
+              opacity="0.8"
+            />
+            {/* End dot */}
+            <circle
+              cx={endX}
+              cy={endY}
+              r="4"
+              fill={to.color}
+              opacity="0.8"
+            />
           </g>
         );
       })}
-    </>
+    </svg>
   );
 }
