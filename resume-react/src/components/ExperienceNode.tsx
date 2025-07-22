@@ -1,77 +1,102 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "../components/ui/hover-card";
-import { Badge } from "../components/ui/badge";
+// src/components/ExperienceNode.tsx
+import React from "react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { Badge } from "./ui/badge";
+import styles from "../styles/ExperienceNode.module.css";
 
 interface ExperienceNodeProps {
-  /** Main label for the node (e.g. company/program name) */
+  id: string;
   label: string;
-  /** Secondary text below the label (e.g. role/degree) */
   subtitle: string;
-  /** Duration string (e.g. "2015–2019") */
   duration: string;
-  /** Highlight bullet points (HTML allowed) */
   highlights: string[];
-  /** Badges or tags shown below title */
   badges?: string[];
-  /** Accent color for neon glow (Tailwind name, e.g. "purple") */
   color: string;
+  glowColor: string;
+  position: { x: number; y: number };
 }
 
 export default function ExperienceNode({
+  id,
   label,
   subtitle,
   duration,
   highlights,
   badges = [],
   color,
+  glowColor,
+  position,
 }: ExperienceNodeProps) {
-  // compute neon styles
-  const borderColor = `border-${color}-400`;
-  const glowColor   = `shadow-[0_0_12px_rgba(var(--tw-${color}-400),0.7)]`;
-
   return (
-    <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger asChild>
-        <div
-          className={`cursor-pointer ${borderColor} ${glowColor} border-2 rounded-lg px-4 py-2 bg-black/80 text-white font-semibold text-base transition-transform hover:scale-105`}
+    <div
+      className={styles.nodeWrapper}
+      style={{ 
+        left: `${position.x}%`, 
+        top: `${position.y}%`,
+      }}
+    >
+      <HoverCard openDelay={0} closeDelay={100}>
+        <HoverCardTrigger asChild>
+          <div
+            className={styles.node}
+            style={{
+              borderColor: color,
+              boxShadow: `
+                0 0 30px ${glowColor}, 
+                0 0 60px ${glowColor}, 
+                inset 0 0 30px ${glowColor}20
+              `,
+            }}
+          >
+            <h3 className={styles.nodeTitle} style={{ color }}>
+              {label}
+            </h3>
+            <p className={styles.nodeSubtitle}>{subtitle}</p>
+          </div>
+        </HoverCardTrigger>
+
+        <HoverCardContent
+          side="top"
+          align="center"
+          className={styles.hoverCard}
+          style={{
+            borderColor: color,
+            boxShadow: `0 0 40px ${glowColor}40`,
+          }}
         >
-          {label}
-        </div>
-      </HoverCardTrigger>
+          <div className={styles.cardHeader} style={{ borderColor: `${color}30` }}>
+            <p className={styles.cardDuration}>{duration}</p>
+            <h3 className={styles.cardTitle}>{label}</h3>
+            <p className={styles.cardSubtitle}>{subtitle}</p>
+          </div>
 
-      <HoverCardContent
-        side="top"
-        align="center"
-        className="w-[85vw] max-w-md rounded-xl bg-white text-gray-900 border border-gray-200 shadow-lg p-6 space-y-4"
-      >
-        <div className="space-y-1">
-          <p className="text-sm text-gray-500">{duration}</p>
-          <h3 className="text-lg font-bold leading-tight">{label}</h3>
-          <p className="text-sm text-gray-700">{subtitle}</p>
-        </div>
+          {badges.length > 0 && (
+            <div className={styles.badgesContainer}>
+              {badges.map((badge, idx) => (
+                <span
+                  key={idx}
+                  className={styles.badge}
+                  style={{ 
+                    backgroundColor: color,
+                    boxShadow: `0 2px 10px ${glowColor}60`
+                  }}
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
+          )}
 
-        {badges.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {badges.map((badge, idx) => (
-              <Badge
-                key={idx}
-                variant="outline"
-                className="text-xs py-1 px-2 uppercase"
-              >
-                {badge}
-              </Badge>
+          <div className={styles.highlightsContainer}>
+            {highlights.map((item, idx) => (
+              <div key={idx} className={styles.highlight}>
+                <span className={styles.bullet} style={{ color }}>→</span>
+                <p className={styles.highlightText}>{item}</p>
+              </div>
             ))}
           </div>
-        )}
-
-        <div className="space-y-2 text-sm text-gray-800">
-          {highlights.map((item, idx) => (
-            <div key={idx} className="flex gap-2 items-start">
-              <span className="text-base leading-tight">•</span>
-              <p className="leading-snug" dangerouslySetInnerHTML={{ __html: item }} />
-            </div>
-          ))}
-        </div>
-      </HoverCardContent>
-    </HoverCard>
+        </HoverCardContent>
+      </HoverCard>
+    </div>
   );
 }

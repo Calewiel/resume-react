@@ -1,0 +1,156 @@
+/* src/styles/ContactCodeEditor.module.css */
+.codeEditor {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 440px;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+  font-family: 'Fira Code', 'Monaco', 'Menlo', 'Courier New', monospace;
+  font-size: 14px;
+  border-radius: 12px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(99, 102, 241, 0.1);
+  z-index: 50;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.6s ease-out 1s both;
+}
+
+.editorHeader {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: rgba(51, 65, 85, 0.5);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.windowControls {
+  display: flex;
+  gap: 8px;
+}
+
+.editorTitle {
+  color: #94a3b8;
+  font-size: 13px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 500;
+}
+
+.circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.circle:hover {
+  transform: scale(1.2);
+}
+
+.editorBody {
+  padding: 20px;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+  line-height: 1.6;
+}
+
+.codeLine {
+  margin: 2px 0;
+  font-size: 13px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Syntax highlighting */
+.keyword {
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.property .propertyName {
+  color: #60a5fa;
+}
+
+.property .propertyValue {
+  color: #86efac;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.property .propertyValue:hover {
+  color: #bbf7d0;
+  text-shadow: 0 0 8px rgba(134, 239, 172, 0.5);
+}
+
+.property .propertyValue::after {
+  content: '↗';
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 11px;
+}
+
+.property .propertyValue:hover::after {
+  opacity: 1;
+}
+
+.comment {
+  color: #64748b;
+  font-style: italic;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 18px;
+  background: #60a5fa;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .codeEditor {
+    width: calc(100vw - 32px);
+    right: 16px;
+    top: auto;
+    bottom: 16px;
+    max-height: 50vh;
+  }
+}
