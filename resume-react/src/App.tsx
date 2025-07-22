@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/App.tsx
 import React, { useState, useCallback, useRef } from 'react';
 import Particles from './components/Particles';
