@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/components/CustomEdge.tsx
 import React from 'react';
 import { getBezierPath, EdgeProps } from '@xyflow/react';

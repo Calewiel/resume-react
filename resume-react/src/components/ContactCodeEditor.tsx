@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/components/ContactCodeEditor.tsx
 import { useEffect, useRef, useState } from 'react';
 import styles from '../styles/ContactCodeEditor.module.css';

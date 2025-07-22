@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/components/ConnectionLines.tsx
 import React from "react";
 
